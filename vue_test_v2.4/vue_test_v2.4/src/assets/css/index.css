@@ -1,0 +1,78 @@
+/* * {
+  max-width: 0;
+  padding: 0;
+} */
+/* html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  font-size: 62.5%;
+} */
+body,
+input,
+button,
+a,
+textarea,
+select {
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: #333;
+}
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+a {
+  text-decoration: none;
+}
+a:hover,
+a:focus {
+  text-decoration: none;
+}
+a:hover {
+  filter: alpha(opacity=90);
+  opacity: 0.9;
+}
+/* 文本对齐 */
+.tc {
+  text-align: center;
+}
+.tr {
+  text-align: right;
+}
+.tl {
+  text-align: left;
+}
+.content {
+  color: #fff;
+  background: #000;
+  width: 100%;
+  height: 100vh; 
+  /* vh 可过根据可视屏的大小调整 */
+}
+
+/* 背景颜色 */
+.bg {
+  background:#000;
+  background-size: cover; 
+  /* cover 表示可填充至整个屏幕 */
+}
+.container {
+  display: flex;
+  flex-direction:column ;
+  justify-content:space-between;
+}
+.module-box {
+  /* 弹性布局 */
+  display: flex;
+  justify-content: space-between; /*两端对齐*/
+  margin: 5px;
+}
+.d-flex {
+  display: flex;
+}
+.box-middle {
+  align-self: center;
+}
