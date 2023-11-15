@@ -5,4 +5,5 @@
 </template>
 
 <style>
+@import url(@/assets/icon/iconfont.css)
 </style>

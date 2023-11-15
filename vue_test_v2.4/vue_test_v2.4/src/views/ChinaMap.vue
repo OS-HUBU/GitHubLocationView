@@ -12,6 +12,8 @@ import axios from 'axios'
 import * as echarts from 'echarts/core'
 import ChinaMapJson from '@/assets/china.json'
 import rankData from '@/assets/china_rank_data.json'
+import scatterData from '@/assets/scatter_china_data.json'
+
 
 
 export default {
@@ -20,13 +22,21 @@ props:{
     type:Array,
     default:() => []
   },
+
  
 },
 
 data(){
 return {
-  
+  yearData: 2008,
+  timeLineIndex: 0,
 }
+},
+
+watch:{
+  timeLineIndex: function(newval){
+    this.sendTimeChange()
+  }
 },
 
 methods: {
@@ -35,7 +45,9 @@ initChart () {
   const _this = this
 
   //数据散点的坐标
-  const  defaultData = this.mapData
+  const  defaultData = scatterData
+  // console.log(defaultData)
+  // console.log(scatterData)
 
   //时间
 
@@ -46,30 +58,13 @@ initChart () {
   for (let year = startYear; year <= endYear; year++) {
     yearArray.push(year);
   }
-  //数据转换成echats支持的格式：
-  var transformedData = [];
 
-    // 添加表头
-    transformedData.push(["Population", "Country", "Year"]);
+  //
+  let item_Colors = [
+  '#F4EDF6','#F1D5CF','#EFBDB3','#E29D9C','#D17C8D','#EB7187','#D95155','#CC3044','#B71234','#5E001F' 
+  ];
 
-    // 遍历原始数据
-    rankData.forEach(item => {
-      var year = parseInt(item.year);
 
-      item.data.forEach(d => {
-        var country = d.name;
-        var population = d.value;
-
-        transformedData.push([population, country, year]);
-      });
-    });
-
-    const dimension = 0;
-
-    let source = transformedData.slice(1).filter(function (d) {
-            return d[2] === startYear; //过滤符合当前年份信息
-          })
-  
   var myChart = echarts.init(this.$refs.chart);
   myChart.showLoading(); //加载动画
   echarts.registerMap('china',ChinaMapJson) 
@@ -92,34 +87,31 @@ initChart () {
         var number = params.value
         return `${params.name}</br>开发者人数：${params.value[2]}人`
       }
-      
-       if(params.componentSubType ==='bar'){
-       
-        return `${params.data[1]}</br>开发者人数：${params.data[0]}人`
-      }
       else{
+       
         return params.name
       }
       
       },
     },
-
+    //
+    
     //图注解
     visualMap: { 
        // calculable: true,
        type:'piecewise',
         pieces:[
         
-        { min: 10000, max: 1000000, label: '＞10000', color: '#5E001F' },
-        { min: 5000, max: 9999, label: '5000-9999', color: '#B71234' },
-        { min: 2000, max: 4999, label: '2000-4999', color: '#CC3044' },
-        { min: 1000, max: 1999, label: '1000-1999', color: '#D95155' },
-        { min: 500, max: 999, label: '500-999', color: '#EB7187' },
-        { min: 200, max: 499, label: '200-499', color: '#D17C8D' },
-        { min: 100, max: 199, label: '100-199', color: '#E29D9C' },
-        { min: 50, max: 99, label: '50-99', color: '#EFBDB3' },
-        { min: 10, max: 49, label: '10-49', color: '#F1D5CF' },
-        { min: 0, max: 9, label: '0-9', color: '#F4EDF6' }
+        { min: 10000, max: 1000000, label: '＞10000', color: item_Colors[9] },
+        { min: 5000, max: 9999, label: '5000-9999', color: item_Colors[8] },
+        { min: 2000, max: 4999, label: '2000-4999', color: item_Colors[7] },
+        { min: 1000, max: 1999, label: '1000-1999', color: item_Colors[6] },
+        { min: 500, max: 999, label: '500-999', color: item_Colors[5] },
+        { min: 200, max: 499, label: '200-499', color: item_Colors[4] },
+        { min: 100, max: 199, label: '100-199', color: item_Colors[3] },
+        { min: 50, max: 99, label: '50-99', color: item_Colors[2] },
+        { min: 10, max: 49, label: '10-49', color:item_Colors[1] },
+        { min: 0, max: 9, label: '0-9', color: item_Colors[0] }
         ],
         textStyle: {
             color: '#fff'
@@ -135,7 +127,7 @@ initChart () {
       data: yearArray,
       axisType: 'category',
       autoPlay: true,//是否自动播放
-      playInterval: 2500,//切换时间，2*1000=2秒
+      playInterval: 3000,//切换时间，2*1000=2秒
       left: '10%',
       right: '10%',
       bottom: '3%',
@@ -186,13 +178,14 @@ initChart () {
     geo: {
       zoom:1.2,
       //显示地理坐标系组件
-      center: [112.2363,35.8572],
+      center: [100.2363,33.8572],
       show: true,
       roam: true,
       //注册的地图名
       map: 'china',
       label:{
-        show:false
+        show:true,
+        color:'#ffffb8'
       },
       //取消高亮状态
       emphasis:{
@@ -222,94 +215,8 @@ initChart () {
       }
     
   },
-   //排行榜设置
-   title:[
-        {
-          text: '{larger|' + startYear + '}年\n中国各地区开发者数量TOP15',
-          left: '75%',
-          top:'5%',
-          textStyle:{
-            color:"#fff",
-            rich: {
-              larger: {
-                fontSize: 40,
-                fontWeight: 'bold'
-            }
-            }
-          }
-        }
-      ],
-  grid: {
-            right: '1%',
-            top: '15%',
-            bottom: '10%',
-            width: '20%'
-        },
-
-  dataset: {
-    source: source  
-  },  
-    // x轴
-    xAxis: {
-        type: "value",
-        axisLine: {
-          show: false,
-        },
-        axisTick: {
-          show: false,
-          
-        },
-        //不显示X轴刻度线和数字
-        splitLine: { show: false },
-        axisLabel: { show: false },
-        dataset:{
-
-        }
-      },
-
-      //y轴
-    yAxis: {
-        type: "category",
-        //升序
-        inverse: true,
-        max:14,
-
-        splitLine: { show: false },
-
-        axisLine: {
-            show: true,
-            lineStyle: {
-                color: '#ddd'
-            }
-        },
-
-        //刻度线
-        axisTick: {
-            show: false,
-            lineStyle: {
-                color: '#ddd'
-            }
-        },
-        //y轴坐标
-        axisLabel: {
-            interval: 0,
-            textStyle: {
-                color: '#ddd',
-                fontSize:'20'
-            }, 
-            
-        },
-        //key和图间距
-        offset: 10,
-        //动画部分
-        animationDuration: 300,
-        animationDurationUpdate: 300,
-        //key文字大小
-        nameTextStyle: {
-          fontSize: 5,
-        },
-        
-      },
+   
+ 
 
     series: [
       //散点的配置
@@ -345,31 +252,7 @@ initChart () {
        
       },
       //柱状图数据
-      {
-        realtimeSort:true,
-        name:"开发者人数",
-        type:"bar",
-        data:source ,
-        encode: {
-            x: dimension,
-            y: 3
-          },
-        barWidth: 14,
-        barGap: 5,
-        smooth: true,
-        valueAnimation: true,
-        itemStyle: {
-          zlevel: 1.5,
-          normal: {
-            color:'#e66f32'
-            
-          },
-          emphasis: {
-            barBorderRadius: 4,
-          },
-        },
-      }
-      
+
     ]
   }
   myChart.setOption(option)
@@ -378,39 +261,26 @@ initChart () {
                  
                  var option =myChart.getOption();//获得option对象
                  //console.log(typeof option.series[1])
-                 option.series[0].data = defaultData[timeLineIndex.currentIndex].data
-                 let year = yearArray[timeLineIndex.currentIndex]
-                 let source = transformedData.slice(1).filter(function (d) {
-                     return d[2] === year;
-                   });
-                   option.series[1].data = source;
-                   option.title[0].text = '{larger|' + year + '}年\n中国各地区开发者数量TOP15';
-                 // _this.$emit('timelineChanged', String(timeLineIndex.currentIndex));
-                 //console.log('timelineChanged', timeLineIndex.currentIndex)
+                 option.series[0].data = defaultData[timeLineIndex.currentIndex].data 
+                 _this.timeLineIndex = timeLineIndex.currentIndex
                  myChart.setOption(option)
              });
 
+  myChart.on('click',function(param){
+    if(param.componentType === 'timeline'){
+      _this.timeLineIndex = param.name-2008
+      var option =myChart.getOption();//获得option对象
+              
+      option.series[0].data = defaultData[param.name-2008].data
+      myChart.setOption(option)
+    }
+  })
 },
 
-// handleClick(event) {
-//   const target = event.target;
-//   const item = this.$refs.item;
-
-//   if (target === item) {
-//     // 鼠标点击到 item
-
-//     // 
-//     //console.log(item)
-//   } else {
-//     // 鼠标点击到其他地方
-//     this.itemInfo = null;
-//     this.$router.push({
-//       path:"/"
-//     })
-//   }
-// }
-
-
+sendTimeChange(){
+    //console.log('发送时间轴变化')
+    this.$bus.$emit('hello',this.timeLineIndex)
+  }
 },
 
 mounted(){
@@ -421,10 +291,9 @@ this.initChart()
 
 </script>
 
-<style >
-.mapChart {
-width: 80%;
-height: 70%;
-/* border: 1px solid red; */
-}
+<style scoped>
+/* .mapChart {
+  border: 1px solid red;
+
+} */
 </style>

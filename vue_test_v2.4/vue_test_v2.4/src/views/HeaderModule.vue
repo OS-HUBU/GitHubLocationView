@@ -6,11 +6,11 @@
         </div>
         <div id="title" style="flex: 0 1  70%">
           <div class="d-flex">、
-            <dv-decoration-8 :color="['#EFBDB3','#EFBDB3']" style="height: 50px; flex: 0.9" />
-              <dv-decoration-11  :color="['#fff', '#EFBDB3']" style="height: 60px; flex: 1.2" >
-                <div class="title">GitHub {{world}}开发者地理信息可视化</div>
+            <dv-decoration-8 :color="['#EFBDB3','#EFBDB3']" style="height: 50px; flex: 0.7" />
+              <dv-decoration-11  :color="['#fff', '#EFBDB3']" style="height: 60px; flex: 1.6" >
+                <div class="title">GitHub {{world}}开发者地理分布大屏</div>
               </dv-decoration-11 >
-            <dv-decoration-8 :color="['#EFBDB3','#EFBDB3']" :reverse="true" style="height: 50px; flex: 0.9" />
+            <dv-decoration-8 :color="['#EFBDB3','#EFBDB3']" :reverse="true" style="height: 50px; flex: 0.7" />
            
           </div>
            
@@ -39,7 +39,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .title{
   font-size: 36px;
   color: burlywood;

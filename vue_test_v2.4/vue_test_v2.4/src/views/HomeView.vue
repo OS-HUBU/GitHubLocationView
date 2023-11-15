@@ -2,15 +2,24 @@
   <div class="content bg">
     <!-- 全屏容器 -->
     <dv-full-screen-container >  
-      <HeaderModule style="width: 100% height: 100px;"/>
-      <!-- <div>
+      <HeaderModule style="width: 100% height: 5%;"/>
+      <div  style="width: 100%; height: 70%;  display: flex; justify-content: space-between; /*两端对齐*/ margin: 1px;">
+        
+        <WorldMap  style="flex: 0 1 70%;" > </WorldMap> 
+        
+        <div class="container">
+          <div><i class="iconfont icon-diyimingdx" style="color: rgb(234, 51, 35);  font-size: 26px" ></i></div>
+          <div><i class="iconfont icon-diermingdx" style="color: rgb(239, 134, 88);font-size: 26px"></i></div>
+          <div><i class="iconfont icon-disanmingdx" style="color: rgb(236, 171, 124);font-size: 26px"></i></div>
+          
+       
+        </div>
 
-      <el-button type="primary" @click="getData">获取数据</el-button>
-
-      </div> -->
-      <WorldMap :mapData="mapData"   style="width: 100%; height: 65%;"> </WorldMap>
       
-      <BottomView :totalData="totalData"     style="width: 100%; height: 100vh;"/>
+        <Rank :yearIndex="time_index"  :rankData="rankDataW" style="flex: 0 1 30%;" > </Rank>
+      </div>
+
+      <LineChart :totalData="totalData" :lineTitle="lineTitle"  :timeIndex="time_index" style="width: 100%; height: 25%" />
 
     </dv-full-screen-container>
   </div>
@@ -18,113 +27,62 @@
 
 <script>
  import HeaderModule from './HeaderModule.vue'  //头部标题
- import MainView from './MainView.vue'  //中间部分
  import WorldMap from './WorldMap.vue';
- import BottomView from './BottomView.vue'
+ import LineChart from './LineChart.vue';
+ import Rank from './Rank.vue';
+ 
 
  //调api接口
  import { findAll } from '@/api/githubData'
 
 
- //导入本地数据
-import originalData from '@/assets/response.json'
 
- const transformedData = [];
-  const totalData = []
+ //导入本地数据
+ import rankDataW from '@/assets/world_rank_data.json'
+import '@/assets/icon/iconfont.css'
+
+
+ 
 
 export default {
   name: 'HomeView',
   components:{
      HeaderModule,//头部标题组件
-     MainView,    // 中间部分
-     BottomView ,  // 底部折线图部分
-     WorldMap
+     WorldMap,// 中间部分
+     Rank,
+     LineChart //底部折线图
+
    },
   data(){
     return{
-      mapData:[],
+      lineTitle:'全球',
+   
       totalData:[4632,14081,31564,61501, 102658, 155658, 215336,274483,339394,398759, 456409,517908,580489, 630102,665020],
-      rankData:[],
+      time_index:0,
+      rankDataW:rankDataW
     }
   },
   methods:{
-   getData(){
-    // findAll().then(response =>{
-    //   console.log('response.data',response.data)
-         
 
-    //   for (let year in originalData) {
-    //   const dataItem = {
-    //     year: year,
-    //     data: []
-    //   };
-    //   for (let key in originalData[year]) {
-    //     const item = originalData[year][key];
-    //     const { 纬度, 经度, totalUsers, chName } = item;
-    //     const value = [经度, 纬度, totalUsers];
-    //     const dataEntry = {
-    //       name: chName,
-    //       value: value
-    //     };
-    //     dataItem.data.push(dataEntry);
-    //   }
-    //   transformedData.push(dataItem);
-    // }
-
-    // console.log(transformedData);
-
-   
-    // })
-    
-   
-
-    
-
-    for (let year in originalData) {
-      
-          const dataItem = {
-          year: year,
-          data: []
-          };
-          //totalData.push(originalData[year].allUsers)
-          for (let key in originalData[year]) {
-            
-            const item = originalData[year][key];
-            const { 纬度, 经度, totalUsers, chName } = item;
-            const value = [经度, 纬度, totalUsers];
-            const dataEntry = {
-              name: chName,
-              value: value
-            };
-            dataItem.data.push(dataEntry);
-          }
-          transformedData.push(dataItem);
-     
-      
-        // console.log('hello ')
-         
-        
-     
-      
-    }
-    const processedData =  transformedData.map(item => ({
-        ...item,
-        data: item.data.map(dataItem => ({
-          ...dataItem,
-          value: dataItem.value[2]
-        })).sort((a, b) => b.value - a.value)
-      }));
-     // console.log( 'processedData' ,processedData);
-
-    this.mapData = transformedData;
-    
-    this.rankData = processedData
-   },
-   
   },
   mounted(){
-    this.getData()
-  }
+    this.$bus.$on('hello',(time_data)=>{
+      this.time_index = time_data;
+      //console.log('this.time_index',this.time_index)
+      // console.log('接受到了数据',time_data)
+    })
+  },
+  beforeDestroy() {
+		this.$bus.$off('hello')
+	}
 
 }
 </script>
+<style scoped>
+  .container{
+    position: absolute;
+    top: 170px;
+    right:460px;
+
+  }
+</style>

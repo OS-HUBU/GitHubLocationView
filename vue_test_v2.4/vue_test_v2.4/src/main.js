@@ -9,6 +9,7 @@ import './assets/css/index.css' // 导入css
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
+
 Vue.prototype.echarts = echarts 
 Vue.use(dataV)
 Vue.config.productionTip = false
@@ -16,5 +17,8 @@ Vue.use(ElementUI);
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  beforeCreate() {
+		Vue.prototype.$bus = this
+	}
 }).$mount('#app')

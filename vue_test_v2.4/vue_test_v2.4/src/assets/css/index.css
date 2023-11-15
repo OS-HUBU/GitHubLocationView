@@ -68,7 +68,7 @@ a:hover {
   /* 弹性布局 */
   display: flex;
   justify-content: space-between; /*两端对齐*/
-  margin: 5px;
+  margin: 1px;
 }
 .d-flex {
   display: flex;

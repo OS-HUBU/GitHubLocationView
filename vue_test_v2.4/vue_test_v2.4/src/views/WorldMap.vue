@@ -12,8 +12,7 @@ import { color } from 'echarts/core'
 
 //地图数据导入
 import worldMapJson from '@/assets/world.json'
-import rankData from '@/assets/world_rank_data.json'
-import scatterData from '@/assets/world_map_data.json'
+import scatterData from '@/assets/scatter_world_data.json'
 export default {
   props: {
     mapData: {
@@ -22,17 +21,22 @@ export default {
 
       ]
     },
-    rankData:{
-        type:Array,
-        default:() =>[]
-      },
   },
 data(){
 return {
-    yearData:2008
-   
-  
+    yearData:2008,
+    timeLineIndex:0,
+
 }
+},
+
+watch:{
+  timeLineIndex: function(newval){
+    this.sendTimeChange()
+    //console.log('监听变化',newval)
+    // console.log('newval',newval)
+    // console.log('oldval',oldval)
+  }
 },
 
 methods: {
@@ -46,43 +50,12 @@ methods: {
     for (let year = startYear; year <= endYear; year++) {
       yearArray.push(year);
     }
-
     //地图散点数据
-    const  defaultData = this.mapData
-
-    //榜单数据
-    //转换成echarts需要的数据
-    var transformedData = [];
-
-    // 添加表头
-    transformedData.push(["Population", "Country", "Year"]);
-
-    // 遍历原始数据
-    rankData.forEach(item => {
-      var year = parseInt(item.year);
-
-      item.data.forEach(d => {
-        var country = d.name;
-        var population = d.value;
-
-        transformedData.push([population, country, year]);
-      });
-    });
-
-    const dimension = 0;
-
-    let source = transformedData.slice(1).filter(function (d) {
-            return d[2] === startYear; //过滤符合当前年份信息
-          })
-
-    
-    
+    const  defaultData = scatterData
     var myChart = echarts.init(this.$refs.chart);
 
     const _this = this;
-    
-    
-    
+ 
     
     myChart.showLoading(); //加载动画
 
@@ -112,7 +85,7 @@ methods: {
         textStyle: {
             color: '#fff'
         },
-        left:"10%",
+        left:"13%",
        bottom: "10%",
        //top:"40%"
       },
@@ -123,7 +96,7 @@ methods: {
         axisType: 'category',
         currentIndex:0,//默认选中时间轴的下标
         autoPlay: true,//是否自动播放
-        playInterval: 2000,//切换时间，2*1000=2秒
+        playInterval: 3000,//切换时间，2*1000=2秒
         left: '10%',
         right: '10%',
         bottom: '3%',
@@ -190,10 +163,6 @@ methods: {
           if(params.componentSubType ==='scatter'){
             return `${params.name}</br>开发者人数：${params.value[2]}人`
           }
-          if(params.componentSubType ==='bar'){
-    
-            return `${params.data[1]}</br>开发者人数：${params.data[0]}人`
-          }
           else{
             return params.name
           }
@@ -205,10 +174,10 @@ methods: {
         //zlevel:1,//地图级别
         zoom:1.1,//缩放级别
         roam: true,
-        //center:[115.97, 29.71],
+        
         // map 后面的参数和之前注册必须一样
         map: 'world',
-        center: [80.83531246, 20.0267395887],
+        center: [15.83531246, 5.0267395887],
         label:{
           show:false
         },
@@ -265,105 +234,8 @@ methods: {
          
       ],
       //排行榜设置
-      title:[
-        {
-          text:   '{larger|' + startYear + '}年\n全球各国开发者数量TOP15',
-          left: '75%',
-          top:'3%',
-          textStyle:{
-            color:"#fff",
-            rich: {
-              larger: {
-                fontSize: 40,
-                fontWeight: 'bold'
-            }
-            }
-          },
-          
-
-        }
-      ]
-      ,
-
-      // grid: {
-      //     left: "3%",
-      //     right: "4%",
-      //     bottom: "3%",
-      //     containLabel: true,
-      //   },
-      grid: {
-                right: '1%',
-                top: '15%',
-                bottom: '10%',
-                width: '20%'
-            },
-
-      dataset: {
-        source: source  
-      }, 
-
-       // x轴
-       xAxis: {
-        type: "value",
-        axisLine: {
-          show: false,
-        },
-        axisTick: {
-          show: false,
-        },
-        //不显示X轴刻度线和数字
-        splitLine: { show: false },
-        axisLabel: { show: false },
-        dataset:{
-
-        }
-      },
-
-      //y轴
-      yAxis: {
-          type: "category",
-          //升序
-          inverse: true,
-
-          max:14,
-
-          splitLine: { show: false },
-
-          axisLine: {
-              show: true,
-              lineStyle: {
-                  color: '#ddd'
-              }
-          },
-
-          //刻度线
-          axisTick: {
-              show: false,
-              lineStyle: {
-                  color: '#ddd'
-              }
-          },
-          //y轴坐标
-          axisLabel: {
-              interval: 0,
-              textStyle: {
-                  color: '#ddd',
-                  fontSize:'20'
-              }, 
-              
-          },
-          //key和图间距
-          offset: 10,
-          //动画部分
-          animationDuration: 300,
-          animationDurationUpdate: 300,
-          //key文字大小
-          nameTextStyle: {
-            fontSize: 5,
-          },
-          
-        },
-
+    
+      
       //数据设置
       series: [  
         //散点的配置
@@ -397,44 +269,7 @@ methods: {
               zlevel:1
             
             },
-        {
-        //柱状图自动排序，排序自动让Y轴名字跟着数据动
-        realtimeSort:true,
-        name:"开发者人数",
-        type:"bar",
-        data:source ,
-        encode: {
-            x: dimension,
-            y: 3
-          },
-        barWidth: 14,
-        barGap: 5,
-        smooth: true,
-        valueAnimation: true,
-        // label: {
-        //   normal: {
-        //     show: false,
-        //     position: "right",
-        //     valueAnimation: true,
-        //     offset: [5, -2],
-        //     textStyle: {
-        //       color: "#fff",
-        //       fontSize: 18,
-        //     },
-        //   },
-        // },
-
-        itemStyle: {
-          zlevel: 1.5,
-          normal: {
-            color:'#e66f32'
-          },
-          emphasis: {
-            barBorderRadius: 4,
-          },
-        },
-        
-          }
+       
          // 地图配置
 
         //  {
@@ -504,17 +339,12 @@ methods: {
                   var option =myChart.getOption();//获得option对象
                   //console.log(typeof option.series[1])
                   option.series[0].data = defaultData[timeLineIndex.currentIndex].data
-                  let year = yearArray[timeLineIndex.currentIndex]
-                  let source = transformedData.slice(1).filter(function (d) {
-                      return d[2] === year;
-                    });
-                  
-                  option.series[1].data = source;
-                  
-                  option.title[0].text ='{larger|' + year + '}年\n全球各国开发者数量TOP15';
+                    _this.timeLineIndex = timeLineIndex.currentIndex
+                    //console.log(_this.timeLineIndex)
                   // _this.$emit('timelineChanged', String(timeLineIndex.currentIndex));
                   //console.log('timelineChanged', timeLineIndex.currentIndex)
                   myChart.setOption(option)
+
               });
 
 
@@ -533,8 +363,9 @@ methods: {
             }
             else if(worldParam.componentType === 'timeline'){
               //
-              
+              _this.timeLineIndex = worldParam.name-2008
               var option =myChart.getOption();//获得option对象
+              
               option.series[0].data = defaultData[worldParam.name-2008].data
               myChart.setOption(option)
             }
@@ -546,6 +377,10 @@ methods: {
     });
 
   },
+  sendTimeChange(){
+    //console.log('发送时间轴变化')
+    this.$bus.$emit('hello',this.timeLineIndex)
+  }
   
  
 
@@ -559,10 +394,8 @@ this.initChart()
 
 </script>
 
-<style >
-.mapChart {
-width: 100%;
-height: 70%;
- /* border: 1px solid red;  */
-}
+<style  >
+/* .mapChart{
+  border: 1px solid red;
+} */
 </style>

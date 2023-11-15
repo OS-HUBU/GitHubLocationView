@@ -21,15 +21,7 @@ const routes = [
     name: 'world',
     component: () => import('../views/HomeView.vue'),
   },
-   {
-    path: '/main1',
-    name: 'mian1',
-    component: () => import('../views/MainView.vue')
-  },   {
-    path: '/main2',
-    name: 'mian2',
-    component: () => import('../views/MainView1.vue')
-  },
+  
   // {
     // path: '/about',
     // name: 'about',

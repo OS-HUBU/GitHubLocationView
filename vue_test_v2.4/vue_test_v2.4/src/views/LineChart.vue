@@ -36,16 +36,26 @@ export default {
     lineTitle:{
       type:String,
       default:() =>'全球'
+    },
+    timeIndex:{
+      type:Number,
+      default:() => 0
     }
   },
   data(){
     return {
       xData:yearArray,
-      name:'全球'
+      name:'全球',
+      timeLineIndex: 0
     }
   },
   mounted(){
     this.initChart(); //绘制图表
+  },
+  watch:{
+    timeIndex(newval){
+      this.timeIndex = newval
+    }
   },
   methods: {
       initChart(){
@@ -70,14 +80,18 @@ export default {
               },
 
             tooltip: {
+              confine: true,
                 trigger: 'axis',
                 textStyle: {
                   fontFamily: '微软雅黑, Arial, sans-serif', // 设置字体为"微软雅黑"
                   fontSize:20
                 },
                 axisPointer: {
-                  animation: false
-                }
+                  animation: true
+                },
+                position:'top',
+                z:99,
+                confine: true
               },
 
             xAxis: {
@@ -124,33 +138,68 @@ export default {
                 {
                   name: this.lineTitle+'开发者总数',
                   type: 'line',
-                  showSymbol: false,
+                  showSymbol: true,
+                  
                   
                   data: this.totalData,
                   lineStyle:{
                     color:'#bc3e48',
                   },
-                  // endLabel: {
-                  // show: true,
-                  // formatter: function (params) {
-                   
-                  //   return populationData[params.currentIndex];
-                  //   }
-                  // }
+
+                  itemStyle:{ //这里设置的拐点颜色
+                      color: '#ffff'
+                  },
+                 
+                  zlevel:1,
                 }
   ]
         };
 
         // 使用刚指定的配置项和数据显示图表。
         
-       
+        
+
           myChart.setOption(option);
+          
+        var nowIndex = _this.timeIndex;
+         
+         function updateDataAndShowTip(){
+            myChart.dispatchAction({
+              type:'showTip',
+              confine: true,
+              //position:'outside',
+              z: 2,
+              seriesIndex:0 ,//系列的index
+              dataIndex: _this.timeIndex,
+              
+            })
+            
+           
+         }
+        //  updateDataAndShowTip();
+
+         var timer = setInterval(function() {
+          
+            updateDataAndShowTip();
+
+            // 检查 dataIndex 的值是否超出范围，如果超出范围则重置为0
+            if (nowIndex !=_this.timeIndex) {
+              nowIndex = _this.timeIndex
+              updateDataAndShowTip();
+            }
+          }, 1000);
+
+
+          
       }
     },
+    sendTime(){
+      this.$bus.$emit('hello',this.timeLineIndex)
+    }
 }
 </script>
 
-<style>
+<style scoped>
 .lineChart{
   background-color: rgba(255, 255, 255, 0.05);
 }
