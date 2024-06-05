@@ -129,7 +129,7 @@ graph TD
 
 **大屏访问地址**：<http://111.47.28.118:30013/#/>
 
-**演示视频地址**：<>
+**演示视频地址**：<https://www.bilibili.com/video/BV1CB4y1f7y9/>
 
 ![image-20230930182924399](https://github.com/OS-HUBU/01-02-02-GitHubLocationView/blob/main/img/image1.png?raw=true)
 
